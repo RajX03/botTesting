@@ -12,12 +12,21 @@ window.pageName = "AI";
 window.$zoho = window.$zoho || {};
 $zoho.salesiq = $zoho.salesiq || {};
 $zoho.salesiq.ready = function () {
-    $zoho.salesiq.reset();
-    $zoho.salesiq.visitor.customInfo({
-        current_page: window.pageName
-    });
+      var wasNavigated = localStorage.getItem("zoho_widget_nav");
 
-};
+      if (wasNavigated === "true") {
+          localStorage.removeItem("zoho_widget_nav");
+          
+          // Reset the salesiq bot profile session cleanly
+          $zoho.salesiq.reset();
+          
+          // Re-inject the new page payload parameters to force the custom text response
+          $zoho.salesiq.visitor.customInfo({ "current_page": window.pageName });
+      } else {
+          // Standard first-time landing tracking configuration
+          $zoho.salesiq.visitor.customInfo({ "current_page": window.pageName });
+      }
+  };
 </script>
 
 <script id="zsiqscript"
