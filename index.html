@@ -11,9 +11,8 @@ window.pageName = "AI";
 
 window.$zoho = window.$zoho || {};
 $zoho.salesiq = $zoho.salesiq || {};
-$zoho.salesiq.reset();
 $zoho.salesiq.ready = function () {
-
+    $zoho.salesiq.reset();
     $zoho.salesiq.visitor.customInfo({
         current_page: window.pageName
     });
