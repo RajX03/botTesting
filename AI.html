@@ -5,29 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI</title>
     <script src="common.js"></script>
-    <script>
-    window.pageName = "AI";
-    window.$zoho = window.$zoho || {};
-    $zoho.salesiq = $zoho.salesiq || {};
-    $zoho.salesiq.ready = function () {
-      // Check if this page load was triggered by a custom menu navigation click
-      var wasNavigated = localStorage.getItem("zoho_widget_nav");
-
-      if (wasNavigated === "true") {
-          localStorage.removeItem("zoho_widget_nav");
-          
-          // Reset the salesiq bot profile session cleanly
-          $zoho.salesiq.reset();
-          
-          // Re-inject the new page payload parameters to force the custom text response
-          $zoho.salesiq.visitor.customInfo({ "current_page": window.pageName });
-      } else {
-          // Standard first-time landing tracking configuration
-          $zoho.salesiq.reset();
-          $zoho.salesiq.visitor.customInfo({ "current_page": window.pageName });
-      }
+   <script>
+  window.pageName = "Shopify"; // set per page
+  window.$zoho = window.$zoho || {};
+  $zoho.salesiq = $zoho.salesiq || {};
+  $zoho.salesiq.ready = function () {
+    $zoho.salesiq.visitor.customInfo({ current_page: window.pageName });
+    setTimeout(function () {
+      $zoho.salesiq.reset();
+    }, 800);
   };
-    </script>
+</script>
+
     
     <script id="zsiqscript"
     src="https://salesiq.zohopublic.in/widget?wc=siqb11fc95e4963fd55d61596a20ba8ef2877393538e1e11ee4f5191eec9403f6bf">
