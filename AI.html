@@ -5,7 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI</title>
     <script src="common.js"></script>
-    <script>window.$zoho=window.$zoho || {};$zoho.salesiq=$zoho.salesiq||{ready:function(){}}</script><script id="zsiqscript" src="https://salesiq.zohopublic.in/widget?wc=siqb11fc95e4963fd55d61596a20ba8ef2877393538e1e11ee4f5191eec9403f6bf" defer></script>
+    <script>
+    window.pageName = "AI";
+    
+    window.$zoho = window.$zoho || {};
+    $zoho.salesiq = $zoho.salesiq || {};
+    
+    $zoho.salesiq.ready = function () {
+    
+        $zoho.salesiq.visitor.customInfo({
+            current_page: window.pageName
+        });
+    
+    };
+    </script>
+    
+    <script id="zsiqscript"
+    src="https://salesiq.zohopublic.in/widget?wc=YOUR_WIDGET">
+    </script>
     <link rel="stylesheet" href="common.css">
 </head>
 <body>
