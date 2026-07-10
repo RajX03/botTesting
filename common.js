@@ -11,6 +11,6 @@ function navigateTo(page) {
     // Small delay so reset finishes
     setTimeout(function () {
         window.location.href = page;
-    }, 300);
+    }, 1000);
 
 }
