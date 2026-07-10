@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>QuickBooks Sync Configuration</title>
+    <script src="https://zohostatic.com"></script>
+    <script src="common.js"></script>
+    <link rel="stylesheet" href="common.css">
+    <script>window.$zoho=window.$zoho || {};$zoho.salesiq=$zoho.salesiq||{ready:function(){}}</script><script id="zsiqscript" src="https://salesiq.zohopublic.in/widget?wc=siqb11fc95e4963fd55d61596a20ba8ef2877393538e1e11ee4f5191eec9403f6bf" defer></script>
+    <style>  
+        body { font-family: Arial, sans-serif; padding: 15px; background-color: #f9f9f9; }
+        .form-group { margin-bottom: 12px; }
+        label { display: block; font-weight: bold; margin-bottom: 4px; }
+        input[type="text"], select { width: 100%; padding: 8px; box-sizing: border-box; }
+        .checkbox-group { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 5px; }
+        .checkbox-group label { font-weight: normal; }
+        button { background-color: #0078d4; color: white; border: none; padding: 10px 15px; cursor: pointer; border-radius: 4px; }
+        button:hover { background-color: #005a9e; }
+        .status-badge { font-weight: bold; color: #d9534f; }
+        .status-connected { color: #5cb85c; }
+    </style>
+</head>
+<body>
+<nav class="navbar">
+    <ul>
+
+        <li>
+            <a href="#" onclick="navigateTo('index.html')">
+                Home
+            </a>
+        </li>
+
+        <li>
+            <a href="#" onclick="navigateTo('AI.html')">
+                AI Services
+            </a>
+        </li>
+
+        <li>
+            <a href="#" onclick="navigateTo('MERN.html')">
+                MERN Stack
+            </a>
+        </li>
+
+        <li>
+            <a href="#" onclick="navigateTo('ZOHO.html')">
+                Zoho
+            </a>
+        </li>
+
+    </ul>
+
+</nav>
+    <h2>QuickBooks Sync Configuration</h2>
+    <div class="form-group">
+        <button id="btnConnect" onclick="connectQB()">Connect to QuickBooks</button>
+        <span id="connectionStatus" class="status-badge">Not Connected</span>
+    </div>
+
+    <div class="form-group">
+        <label for="realmId">QuickBooks Realm ID (Company ID):</label>
+        <input type="text" id="realmId" placeholder="e.g. 9130352938123456" readonly>
+    </div>
+
+    <div class="form-group">
+        <label for="companyName">Company Name:</label>
+        <input type="text" id="companyName" readonly placeholder="Will auto-populate after connection">
+    </div>
+
+    <div class="form-group">
+        <label for="organization">Zoho Books Organization ID:</label>
+        <input type="text" id="organization" placeholder="Enter Zoho Books Org ID">
+    </div>
+
+    <div class="form-group">
+        <label for="frequency">Sync Frequency:</label>
+        <select id="frequency">
+            <option value="15">Every 15 Minutes</option>
+            <option value="60">Every Hour</option>
+            <option value="1440">Daily</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label><input type="checkbox" id="enableSync" checked> Enable Bidirectional Sync</label>
+    </div>
+
+    <div class="form-group">
+        <label>Sync Modules:</label>
+        <div class="checkbox-group">
+            <label><input type="checkbox" id="customers" checked> Customers</label>
+            <label><input type="checkbox" id="items" checked> Items</label>
+            <label><input type="checkbox" id="invoices" checked> Invoices</label>
+            <label><input type="checkbox" id="payments"> Payments</label>
+            <label><input type="checkbox" id="vendors"> Vendors</label>
+            <label><input type="checkbox" id="bills"> Bills</label>
+        </div>
+    </div>
+
+    <button onclick="saveSettings()">Save Settings</button>
+
+    <script>
+        // Initialize Zoho SDK
+        ZOHO.CREATOR.EXTENSION.init().then(function() {
+            loadSavedSettings();
+        });
+
+        // 1. Generate Auth URL and open pop-up
+        async function connectQB() {
+            try {
+                const response = await ZOHO.CREATOR.EXTENSION.invokeFunction({
+                    functionName: "generateOAuthURL"
+                });
+
+                if (response && response.url) {
+                    // Open Intuit Authorization Window
+                    const authWindow = window.open(response.url, "_blank", "width=600,height=700");
+                    
+                    // Listen for message from callback window upon consent completion
+                    window.addEventListener("message", async function(event) {
+                        if (event.data && event.data.type === "QB_AUTH_SUCCESS") {
+                            document.getElementById("realmId").value = event.data.realmId;
+                            await testConnection(event.data.realmId);
+                        }
+                    }, false);
+                } else {
+                    alert("Failed to get OAuth URL.");
+                }
+            } catch (e) {
+                console.error(e);
+                alert("Unable to initiate connection.");
+            }
+        }
+
+        // 2. Validate connection status and fetch company name
+        async function testConnection(realmId) {
+            try {
+                const response = await ZOHO.CREATOR.EXTENSION.invokeFunction({
+                    functionName: "testQuickBooksConnection",
+                    config: { realm_id: realmId }
+                });
+
+                if (response && response.success) {
+                    document.getElementById("companyName").value = response.companyName || "";
+                    const statusEl = document.getElementById("connectionStatus");
+                    statusEl.innerText = "Connected";
+                    statusEl.className = "status-badge status-connected";
+                } else {
+                    alert(response.message || "Connection test failed.");
+                }
+            } catch (error) {
+                console.error(error);
+                alert("Error testing QuickBooks connection.");
+            }
+        }
+
+        // 3. Save Settings to Backend Extension Storage
+        async function saveSettings() {
+            let settings = {
+                companyName: document.getElementById("companyName").value,
+                realmId: document.getElementById("realmId").value,
+                organization: document.getElementById("organization").value,
+                frequency: document.getElementById("frequency").value,
+                enableSync: document.getElementById("enableSync").checked,
+                modules: {
+                    customers: document.getElementById("customers").checked,
+                    items: document.getElementById("items").checked,
+                    invoices: document.getElementById("invoices").checked,
+                    payments: document.getElementById("payments").checked,
+                    vendors: document.getElementById("vendors").checked,
+                    bills: document.getElementById("bills").checked
+                }
+            };
+
+            try {
+                const response = await ZOHO.CREATOR.EXTENSION.invokeFunction({
+                    functionName: "saveExtensionSettings",
+                    config: { settings: JSON.stringify(settings) }
+                });
+
+                if (response && response.success) {
+                    alert("Settings saved successfully!");
+                } else {
+                    alert("Failed to save settings.");
+                }
+            } catch (error) {
+                console.error(error);
+                alert("Error saving settings.");
+            }
+        }
+
+        // 4. Fetch stored configurations on load
+        async function loadSavedSettings() {
+            try {
+                const response = await ZOHO.CREATOR.EXTENSION.invokeFunction({
+                    functionName: "loadExtensionSettings"
+                });
+
+                if (response && response.settings) {
+                    let data = JSON.parse(response.settings);
+                    document.getElementById("realmId").value = data.realmId || "";
+                    document.getElementById("companyName").value = data.companyName || "";
+                    document.getElementById("organization").value = data.organization || "";
+                    document.getElementById("frequency").value = data.frequency || "15";
+                    document.getElementById("enableSync").checked = data.enableSync;
+                    
+                    if (data.modules) {
+                        document.getElementById("customers").checked = data.modules.customers;
+                        document.getElementById("items").checked = data.modules.items;
+                        document.getElementById("invoices").checked = data.modules.invoices;
+                        document.getElementById("payments").checked = data.modules.payments;
+                        document.getElementById("vendors").checked = data.modules.vendors;
+                        document.getElementById("bills").checked = data.modules.bills;
+                    }
+
+                    if (data.realmId) {
+                        testConnection(data.realmId);
+                    }
+                }
+            } catch (err) {
+                console.log("No existing settings found or load error:", err);
+            }
+        }
+    </script>
+</body>
+</html>

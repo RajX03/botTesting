@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>QuickBooks Integration Settings</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Segoe UI',sans-serif;
+}
+
+body{
+    background:#f5f7fb;
+    padding:30px;
+}
+
+.container{
+    max-width:900px;
+    margin:auto;
+}
+
+.header{
+    background:linear-gradient(135deg,#2563eb,#4f46e5);
+    color:white;
+    padding:25px 30px;
+    border-radius:15px;
+    box-shadow:0 10px 25px rgba(0,0,0,.12);
+    margin-bottom:25px;
+}
+
+.header h1{
+    font-size:28px;
+    margin-bottom:5px;
+}
+
+.header p{
+    opacity:.9;
+}
+
+.card{
+    background:white;
+    border-radius:15px;
+    padding:25px;
+    margin-bottom:20px;
+    box-shadow:0 4px 15px rgba(0,0,0,.08);
+}
+
+.card-title{
+    font-size:20px;
+    font-weight:600;
+    margin-bottom:20px;
+    color:#1e293b;
+}
+
+.form-group{
+    margin-bottom:20px;
+}
+
+label{
+    display:block;
+    margin-bottom:8px;
+    font-weight:600;
+    color:#334155;
+}
+
+input[type=text],
+select{
+    width:100%;
+    padding:12px 15px;
+    border:1px solid #dbe2ea;
+    border-radius:10px;
+    font-size:14px;
+    transition:.3s;
+}
+
+input[type=text]:focus,
+select:focus{
+    outline:none;
+    border-color:#2563eb;
+    box-shadow:0 0 0 3px rgba(37,99,235,.15);
+}
+
+.readonly{
+    background:#f8fafc;
+}
+
+.btn{
+    border:none;
+    padding:12px 18px;
+    border-radius:10px;
+    cursor:pointer;
+    font-size:14px;
+    font-weight:600;
+    transition:.3s;
+}
+
+.btn-primary{
+    background:#2563eb;
+    color:white;
+}
+
+.btn-primary:hover{
+    background:#1d4ed8;
+}
+
+.btn-success{
+    background:#16a34a;
+    color:white;
+}
+
+.btn-success:hover{
+    background:#15803d;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:20px;
+}
+
+.checkbox-group{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:15px;
+}
+
+.checkbox-item{
+    background:#f8fafc;
+    padding:12px;
+    border-radius:10px;
+}
+
+.radio-group{
+    display:flex;
+    gap:20px;
+    flex-wrap:wrap;
+}
+
+.radio-group label{
+    margin-bottom:0;
+    font-weight:500;
+}
+
+.toggle{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.switch{
+    position:relative;
+    width:55px;
+    height:30px;
+}
+
+.switch input{
+    display:none;
+}
+
+.slider{
+    position:absolute;
+    cursor:pointer;
+    inset:0;
+    background:#cbd5e1;
+    border-radius:50px;
+    transition:.3s;
+}
+
+.slider:before{
+    content:"";
+    position:absolute;
+    width:24px;
+    height:24px;
+    left:3px;
+    top:3px;
+    background:white;
+    border-radius:50%;
+    transition:.3s;
+}
+
+input:checked + .slider{
+    background:#16a34a;
+}
+
+input:checked + .slider:before{
+    transform:translateX(25px);
+}
+
+.footer{
+    text-align:right;
+    margin-top:25px;
+}
+
+.status-badge{
+    display:inline-block;
+    padding:8px 12px;
+    border-radius:20px;
+    background:#dcfce7;
+    color:#166534;
+    font-size:12px;
+    font-weight:600;
+}
+
+@media(max-width:768px){
+    .grid{
+        grid-template-columns:1fr;
+    }
+
+    .checkbox-group{
+        grid-template-columns:1fr;
+    }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <h1>QuickBooks ↔ Zoho Books Integration</h1>
+        <p>Manage synchronization settings and company connections.</p>
+    </div>
+
+    <div class="card">
+
+        <div class="card-title">
+            Connection Settings
+        </div>
+
+        <div class="grid">
+
+            <div class="form-group">
+                <label>QuickBooks Connection</label>
+                <button class="btn btn-primary" onclick="connectQB()">
+                    Connect QuickBooks
+                </button>
+            </div>
+
+            <div class="form-group">
+                <label>Status</label>
+                <div class="status-badge" id="connectionStatus">
+                    Not Connected
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Company Name</label>
+                <input
+                    type="text"
+                    id="companyName"
+                    class="readonly"
+                    readonly>
+            </div>
+
+            <div class="form-group">
+                <label>Realm ID</label>
+                <input
+					type="text"
+					id="realmId"
+					placeholder="Enter QuickBooks Realm ID">
+            </div>
+
+            <div class="form-group">
+                <label>Zoho Books Organization</label>
+                <select id="organization">
+                    <option>Select Organization</option>
+                    <option value="org1">Organization 1</option>
+                    <option value="org2">Organization 2</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Sync Frequency</label>
+                <select id="frequency">
+                    <option value="5">Every 5 Minutes</option>
+                    <option value="15">Every 15 Minutes</option>
+                    <option value="30">Every 30 Minutes</option>
+                    <option value="60">Every 1 Hour</option>
+                </select>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="card">
+
+        <div class="card-title">
+            Sync Direction
+        </div>
+
+        <div class="radio-group">
+
+            <label>
+                <input type="radio"
+                       name="direction"
+                       value="QB_TO_ZB">
+                QuickBooks → Zoho Books
+            </label>
+
+            <label>
+                <input type="radio"
+                       name="direction"
+                       value="ZB_TO_QB">
+                Zoho Books → QuickBooks
+            </label>
+
+            <label>
+                <input type="radio"
+                       name="direction"
+                       value="BIDIRECTIONAL"
+                       checked>
+                Bidirectional
+            </label>
+
+        </div>
+
+    </div>
+
+    <div class="card">
+
+        <div class="card-title">
+            Modules to Synchronize
+        </div>
+
+        <div class="checkbox-group">
+
+            <div class="checkbox-item">
+                <input type="checkbox" id="customers" checked>
+                <label for="customers">Customers</label>
+            </div>
+
+            <div class="checkbox-item">
+                <input type="checkbox" id="items" checked>
+                <label for="items">Items</label>
+            </div>
+
+            <div class="checkbox-item">
+                <input type="checkbox" id="invoices" checked>
+                <label for="invoices">Invoices</label>
+            </div>
+
+            <div class="checkbox-item">
+                <input type="checkbox" id="payments" checked>
+                <label for="payments">Payments</label>
+            </div>
+
+            <div class="checkbox-item">
+                <input type="checkbox" id="vendors">
+                <label for="vendors">Vendors</label>
+            </div>
+
+            <div class="checkbox-item">
+                <input type="checkbox" id="bills">
+                <label for="bills">Bills</label>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="card">
+
+        <div class="card-title">
+            Integration Status
+        </div>
+
+        <div class="toggle">
+            <label class="switch">
+                <input type="checkbox"
+                       id="enableSync"
+                       checked>
+                <span class="slider"></span>
+            </label>
+
+            <span>Enable Integration</span>
+        </div>
+
+    </div>
+
+    <div class="footer">
+        <button class="btn btn-success" onclick="saveSettings()">
+            Save Settings
+        </button>
+    </div>
+
+</div>
+
+<script>
+    
+async function connectQB() {
+    try {
+        const response = await ZOHO.CREATOR.EXTENSION.invokeFunction({
+            functionName: "testQuickBooksConnection",
+            config: {}
+        });
+
+        if (response.success) {
+            document.getElementById("companyName").value = response.companyName;
+            document.getElementById("realmId").value = response.realmId;
+            document.getElementById("connectionStatus").innerHTML = "Connected";
+        } else {
+            alert(response.message);
+        }
+    } catch (err) {
+        console.log(err);
+        alert("Unable to connect.");
+    }
+}
+
+async function testWithManualRealmId() {
+    const realmId = document.getElementById("realmId").value;
+    if (!realmId) {
+        alert("Please enter Realm ID");
+        return;
+    }
+
+    try {
+        const response = await ZOHO.CREATOR.EXTENSION.invokeFunction({
+            functionName: "testQuickBooksConnection",
+            config: { realm_id: realmId }
+        });
+
+        if (response.success) {
+            document.getElementById("companyName").value = response.companyName;
+            document.getElementById("connectionStatus").innerHTML = "Connected";
+        } else {
+            alert(response.message);
+        }
+    } catch (error) {
+        console.log(error);
+        alert("Connection Failed");
+    }
+}
+
+async function saveSettings() {
+    let data = {
+        companyName: document.getElementById("companyName").value,
+        realmId: document.getElementById("realmId").value,
+        organization: document.getElementById("organization").value,
+        frequency: document.getElementById("frequency").value,
+        enableSync: document.getElementById("enableSync").checked,
+        customers: document.getElementById("customers").checked,
+        items: document.getElementById("items").checked,
+        invoices: document.getElementById("invoices").checked,
+        payments: document.getElementById("payments").checked,
+        vendors: document.getElementById("vendors").checked,
+        bills: document.getElementById("bills").checked
+    };
+
+    try {
+        const response = await ZOHO.CREATOR.EXTENSION.invokeFunction({
+            functionName: "saveSettings",
+            config: data
+        });
+
+        if (response.success) {
+            alert("Settings Saved Successfully");
+        } else {
+            alert(response.message);
+        }
+    } catch (e) {
+        console.log(e);
+        alert("Unable to save settings.");
+    }
+}
+
+</script>
+
+</body>
+</html>
