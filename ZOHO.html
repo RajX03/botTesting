@@ -5,28 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ZOHO</title>
     <script src="common.js"></script>
-    <script>
-    window.pageName = "ZOHO";
-    
-    window.$zoho = window.$zoho || {};
-    $zoho.salesiq = $zoho.salesiq || {};
-     window.pageName = "Shopify"; // set per page
-  window.$zoho = window.$zoho || {};
-  $zoho.salesiq = $zoho.salesiq || {};
-  $zoho.salesiq.ready = function () {
-    // 1. Set the page context FIRST
-    $zoho.salesiq.visitor.customInfo({ current_page: window.pageName });
-
-    // 2. Give the SDK's own pageview beacon time to sync with the server
-    //    before forcing a trigger re-evaluation
-    setTimeout(function () {
-      $zoho.salesiq.reset();
-    }, 800);
-  };
-    </script>
-
-<script id="zsiqscript"
-src="https://salesiq.zohopublic.in/widget?wc=siqb11fc95e4963fd55d61596a20ba8ef2877393538e1e11ee4f5191eec9403f6bf">
+    <script>window.$zoho=window.$zoho || {};$zoho.salesiq=$zoho.salesiq||{ready:function(){$zoho.salesiq.reset();}}</script>
+    <script id="zsiqscript" src="https://salesiq.zohopublic.in/widget?wc=siqb11fc95e4963fd55d61596a20ba8ef2877393538e1e11ee4f5191eec9403f6bf" defer></script>
 </script>    <link rel="stylesheet" href="common.css">
 </head>
 <body>
