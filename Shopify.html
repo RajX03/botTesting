@@ -23,6 +23,7 @@
           $zoho.salesiq.visitor.customInfo({ "current_page": window.pageName });
       } else {
           // Standard first-time landing tracking configuration
+          $zoho.salesiq.reset();
           $zoho.salesiq.visitor.customInfo({ "current_page": window.pageName });
       }
   };
