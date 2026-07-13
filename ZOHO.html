@@ -5,7 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ZOHO</title>
     <script src="common.js"></script>
-    <script>window.$zoho=window.$zoho || {};$zoho.salesiq=$zoho.salesiq||{ready:function(){}}</script>
+   <script>window.$zoho=window.$zoho || {};$zoho.salesiq=$zoho.salesiq||{ready:function(){
+     $zoho.salesiq.visitor.getGeoDetails();
+  }}</script>
+    <script>
+    $zoho.salesiq.afterReady=function(visitorgeoinfo)
+    {
+       if (!window.hasResetSalesIQ) {
+              window.hasResetSalesIQ = true; 
+              $zoho.salesiq.reset();    
+        }
+      }
+</script>
     <script id="zsiqscript" src="https://salesiq.zohopublic.in/widget?wc=siqb11fc95e4963fd55d61596a20ba8ef2877393538e1e11ee4f5191eec9403f6bf" defer></script>
 </script>    <link rel="stylesheet" href="common.css">
 </head>
